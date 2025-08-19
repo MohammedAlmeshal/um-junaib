@@ -1,0 +1,90 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Game struct {
+	board [BoardSize][BoardSize]int
+	snake *Snake
+	food  *Food
+}
+
+func NewGame() *Game {
+	coord := Coord{0, 1}
+	snake := &Snake{occupied: make(map[Coord]bool), direction: RIGHT}
+	snake.body.Enqueue(coord)
+	snake.occupied[coord] = true
+
+	food := &Food{}
+	food.spawn()
+
+	return &Game{
+		snake: snake,
+		food:  food,
+	}
+}
+
+func (game *Game) tick(dir Direction) bool {
+	snake := game.snake
+	food := game.food
+
+	snake.direction = dir
+	ateFood := snake.head() == food.coord
+	tail := snake.tail()
+
+	snake.move()
+
+	if snake.boarderCollided() || snake.selfCollided() {
+		fmt.Println("\nGAME OVER!")
+		return false
+	}
+
+	if ateFood {
+		snake.grow(tail)
+
+		for {
+			food.spawn()
+			if !snake.occupied[food.coord] {
+				break
+			}
+		}
+	}
+	return true
+}
+
+func Run(game *Game) {
+	pendingDir := RIGHT
+	speed := 300 * time.Millisecond
+
+	ticker := time.NewTicker(speed)
+	defer ticker.Stop()
+
+	inputChan := startInputReader()
+
+	for {
+		select {
+		case <-ticker.C:
+			if ok := game.tick(pendingDir); !ok {
+				return
+			}
+			renderBoard(game)
+
+		case data, ok := <-inputChan:
+			if !ok {
+				fmt.Println("\nInput channel closed!")
+				return
+			}
+			if dir, ok := inputHandler(data); ok && validTurn(game.snake.direction, dir) {
+				pendingDir = dir
+			}
+		}
+	}
+}
+
+func validTurn(current, next Direction) bool {
+	isOpposite := (current ^ next) == 1
+	isSame := current == next
+	return !(isOpposite || isSame)
+}
