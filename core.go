@@ -1,6 +1,6 @@
 package main
 
-const BoardSize = 10
+const BoardSize = 20
 
 type Queue[T any] struct {
 	data []T
