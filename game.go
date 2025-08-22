@@ -26,7 +26,7 @@ func NewGame() *Game {
 	}
 }
 
-func (game *Game) tick(dir Direction) bool {
+func (game *Game) tick(dir Direction) GameStatus {
 	snake := game.snake
 	food := game.food
 
@@ -37,11 +37,16 @@ func (game *Game) tick(dir Direction) bool {
 	snake.move()
 
 	if snake.boarderCollided() || snake.selfCollided() {
-		return false
+		return GameDead
 	}
 
 	if ateFood {
 		snake.grow(tail)
+
+		// Check if player won (snake fills entire board)
+		if len(snake.occupied) == BoardSize*BoardSize {
+			return GameWon
+		}
 
 		for {
 			food.spawn()
@@ -50,7 +55,7 @@ func (game *Game) tick(dir Direction) bool {
 			}
 		}
 	}
-	return true
+	return GameRunning
 }
 
 func Run(game *Game, inputChan <-chan []byte) GameStatus {
@@ -63,8 +68,9 @@ func Run(game *Game, inputChan <-chan []byte) GameStatus {
 	for {
 		select {
 		case <-ticker.C:
-			if ok := game.tick(pendingDir); !ok {
-				return GameDead
+			status := game.tick(pendingDir)
+			if status != GameRunning {
+				return status
 			}
 			renderBoard(game)
 

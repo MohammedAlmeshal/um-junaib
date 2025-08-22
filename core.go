@@ -7,6 +7,7 @@ type GameStatus int
 const (
 	GameRunning GameStatus = iota
 	GameDead
+	GameWon
 	GameTerminated
 )
 

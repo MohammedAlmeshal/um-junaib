@@ -5,43 +5,58 @@ import (
 	"os"
 )
 
-func handleMenuInput(inputChan <-chan []byte) bool {
+func waitForInput(inputChan <-chan []byte) byte {
 	for {
 		data := <-inputChan
-
-		if len(data) == 0 {
-			continue
+		if len(data) > 0 {
+			return data[0]
 		}
+	}
+}
 
-		switch data[0] {
+func startMenu(inputChan <-chan []byte) bool {
+	showStartMenu()
+	for {
+		input := waitForInput(inputChan)
+		switch input {
 		case 's', 'S':
-			return true // Start game
+			return true
 		case 'q', 'Q':
-			fmt.Print("QUIT")
 			os.Exit(0)
 		default:
-			// Invalid input, show menu again
 			showStartMenu()
 		}
 	}
 }
 
-func handleGameOver(inputChan <-chan []byte) bool {
+func gameOverMenu(inputChan <-chan []byte) bool {
 	showGameOver()
-
 	for {
-		data := <-inputChan
-
-		if len(data) == 0 {
-			continue
-		}
-
-		switch data[0] {
+		input := waitForInput(inputChan)
+		switch input {
 		case 'r', 'R':
-			return true // Restart
+			return true
 		case 'q', 'Q':
 			fmt.Print("QUIT")
 			os.Exit(0)
+		default:
+			showGameOver()
+		}
+	}
+}
+
+func winMenu(inputChan <-chan []byte) bool {
+	showWinScreen()
+	for {
+		input := waitForInput(inputChan)
+		switch input {
+		case 'r', 'R':
+			return true
+		case 'q', 'Q':
+			fmt.Print("QUIT")
+			os.Exit(0)
+		default:
+			showWinScreen()
 		}
 	}
 }
@@ -50,8 +65,7 @@ func main() {
 	inputChan := startInputReader()
 
 	// Show start menu
-	showStartMenu()
-	if !handleMenuInput(inputChan) {
+	if !startMenu(inputChan) {
 		return
 	}
 
@@ -62,11 +76,14 @@ func main() {
 
 		switch status {
 		case GameDead:
-			if !handleGameOver(inputChan) {
+			if !gameOverMenu(inputChan) {
+				return
+			}
+		case GameWon:
+			if !winMenu(inputChan) {
 				return
 			}
 		case GameTerminated:
-			fmt.Print("QUIT")
 			return
 		}
 	}
