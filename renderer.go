@@ -132,3 +132,20 @@ func renderBoard(game *Game) {
 	// Render bottom border
 	renderBottomBorder(cols)
 }
+
+func showStartMenu() {
+	clearScreen()
+	fmt.Print(`
+	SNAKE GAME
+	
+	Press 's' to start
+	Press 'q' to quit
+	
+	Your choice: `)
+}
+
+func showGameOver() {
+	clearScreen()
+	fmt.Print("				GAME OVER\n")
+	fmt.Print("				Press 'r' to restart or 'q' to quit: ")
+}

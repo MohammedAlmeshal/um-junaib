@@ -37,7 +37,6 @@ func (game *Game) tick(dir Direction) bool {
 	snake.move()
 
 	if snake.boarderCollided() || snake.selfCollided() {
-		fmt.Println("\nGAME OVER!")
 		return false
 	}
 
@@ -54,27 +53,25 @@ func (game *Game) tick(dir Direction) bool {
 	return true
 }
 
-func Run(game *Game) {
+func Run(game *Game, inputChan <-chan []byte) GameStatus {
 	pendingDir := RIGHT
-	speed := 300 * time.Millisecond
+	speed := 100 * time.Millisecond
 
 	ticker := time.NewTicker(speed)
 	defer ticker.Stop()
-
-	inputChan := startInputReader()
 
 	for {
 		select {
 		case <-ticker.C:
 			if ok := game.tick(pendingDir); !ok {
-				return
+				return GameDead
 			}
 			renderBoard(game)
 
 		case data, ok := <-inputChan:
 			if !ok {
 				fmt.Println("\nInput channel closed!")
-				return
+				return GameTerminated
 			}
 			if dir, ok := inputHandler(data); ok && validTurn(game.snake.direction, dir) {
 				pendingDir = dir

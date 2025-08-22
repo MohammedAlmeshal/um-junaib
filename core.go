@@ -2,6 +2,14 @@ package main
 
 const BoardSize = 20
 
+type GameStatus int
+
+const (
+	GameRunning GameStatus = iota
+	GameDead
+	GameTerminated
+)
+
 type Queue[T any] struct {
 	data []T
 }
