@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 
@@ -9,8 +10,8 @@ import (
 
 const (
 	// Display glyphs
-	snakeBodyGlyph = "\033[38;2;139;153;601m ⦾ \033[0m"
-	snakeHeadGlyph = " 🐍"
+	snakeBodyGlyph = "\033[38;2;139;153;601m ◇ \033[0m"
+	snakeHeadGlyph = "\033[38;2;139;153;601m o \033[0m"
 	foodGlyph      = " 🍓"
 	gridGlyph      = "\033[2;90m ◦ \033[0m"
 
@@ -108,6 +109,8 @@ func renderBoard(game *Game) {
 	clearScreen()
 	hideCursor()
 
+	fmt.Printf(indent+"Score: %d \r\n", game.getScore())
+
 	// Render top border
 	renderTopBorder(cols)
 
@@ -135,17 +138,18 @@ func renderBoard(game *Game) {
 
 func showStartMenu() {
 	clearScreen()
-	fmt.Print(`SNAKE GAME`)
+	fmt.Print("\r\nSTART 🐍\r\n")
+	fmt.Print("Press 's' to start or 'q' to quit: ")
 }
 
 func showGameOver() {
 	clearScreen()
-	fmt.Print("				GAME OVER\n")
-	fmt.Print("				Press 'r' to restart or 'q' to quit: ")
+	fmt.Print("\r\nGAME OVER!\r\n")
+	fmt.Print("Press 'r' to restart or 'q' to quit: ")
 }
 
 func showWinScreen() {
 	clearScreen()
-	fmt.Print("				YOU WON! 🎉\n")
-	fmt.Print("				Press 'r' to restart or 'q' to quit: ")
+	fmt.Print("\r\nYOU WON! 🎉\r\n")
+	fmt.Print("Press 'r' to restart or 'q' to quit: ")
 }

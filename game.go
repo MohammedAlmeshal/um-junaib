@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -58,6 +57,10 @@ func (game *Game) tick(dir Direction) GameStatus {
 	return GameRunning
 }
 
+func (game *Game) getScore() int {
+	return len(game.snake.occupied)
+}
+
 func Run(game *Game, inputChan <-chan []byte) GameStatus {
 	pendingDir := RIGHT
 	speed := 100 * time.Millisecond
@@ -76,7 +79,6 @@ func Run(game *Game, inputChan <-chan []byte) GameStatus {
 
 		case data, ok := <-inputChan:
 			if !ok {
-				fmt.Println("\nInput channel closed!")
 				return GameTerminated
 			}
 			if dir, ok := inputHandler(data); ok && validTurn(game.snake.direction, dir) {

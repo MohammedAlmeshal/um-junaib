@@ -1,6 +1,8 @@
 package main
 
-const BoardSize = 20
+import _ "embed"
+
+const BoardSize = 15
 
 type GameStatus int
 
@@ -10,6 +12,9 @@ const (
 	GameWon
 	GameTerminated
 )
+
+//go:embed art.txt
+var snakeArt string
 
 type Queue[T any] struct {
 	data []T

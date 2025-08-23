@@ -5,11 +5,14 @@ import (
 	"os"
 )
 
-func waitForInput(inputChan <-chan []byte) byte {
+func waitForInput(inputChan <-chan []byte) (byte, bool) {
 	for {
-		data := <-inputChan
+		data, ok := <-inputChan
+		if !ok {
+			return 0, false
+		}
 		if len(data) > 0 {
-			return data[0]
+			return data[0], true
 		}
 	}
 }
@@ -17,11 +20,16 @@ func waitForInput(inputChan <-chan []byte) byte {
 func startMenu(inputChan <-chan []byte) bool {
 	showStartMenu()
 	for {
-		input := waitForInput(inputChan)
+		input, ok := waitForInput(inputChan)
+		if !ok {
+			restoreTerminal()
+			os.Exit(0)
+		}
 		switch input {
 		case 's', 'S':
 			return true
 		case 'q', 'Q':
+			restoreTerminal()
 			os.Exit(0)
 		default:
 			showStartMenu()
@@ -32,12 +40,17 @@ func startMenu(inputChan <-chan []byte) bool {
 func gameOverMenu(inputChan <-chan []byte) bool {
 	showGameOver()
 	for {
-		input := waitForInput(inputChan)
+		input, ok := waitForInput(inputChan)
+		if !ok {
+			restoreTerminal()
+			os.Exit(0)
+		}
 		switch input {
 		case 'r', 'R':
 			return true
 		case 'q', 'Q':
 			fmt.Print("QUIT")
+			restoreTerminal()
 			os.Exit(0)
 		default:
 			showGameOver()
@@ -48,12 +61,16 @@ func gameOverMenu(inputChan <-chan []byte) bool {
 func winMenu(inputChan <-chan []byte) bool {
 	showWinScreen()
 	for {
-		input := waitForInput(inputChan)
+		input, ok := waitForInput(inputChan)
+		if !ok {
+			restoreTerminal()
+			os.Exit(0)
+		}
 		switch input {
 		case 'r', 'R':
 			return true
 		case 'q', 'Q':
-			fmt.Print("QUIT")
+			restoreTerminal()
 			os.Exit(0)
 		default:
 			showWinScreen()
@@ -62,10 +79,11 @@ func winMenu(inputChan <-chan []byte) bool {
 }
 
 func main() {
+	defer restoreTerminal()
 	inputChan := startInputReader()
 
 	// Show start menu
-	if !startMenu(inputChan) {
+	if start := startMenu(inputChan); !start {
 		return
 	}
 
@@ -76,11 +94,11 @@ func main() {
 
 		switch status {
 		case GameDead:
-			if !gameOverMenu(inputChan) {
+			if restart := gameOverMenu(inputChan); !restart {
 				return
 			}
 		case GameWon:
-			if !winMenu(inputChan) {
+			if restart := winMenu(inputChan); !restart {
 				return
 			}
 		case GameTerminated:
