@@ -10,7 +10,7 @@ const (
 )
 
 type Snake struct {
-	body      Queue[Coord]
+	body      *Queue[Coord]
 	occupied  map[Coord]bool
 	direction Direction
 }
@@ -39,25 +39,24 @@ func (snake *Snake) move() {
 }
 
 func (snake *Snake) tail() Coord {
-	return snake.body.data[0]
+	return snake.body.data[snake.body.head]
 }
 func (snake *Snake) head() Coord {
-	return snake.body.data[len(snake.body.data)-1]
+	return snake.body.data[(snake.body.tail-1+snake.body.size)%snake.body.size]
 }
 func (snake *Snake) grow(coord Coord) {
-	snake.body.data = append([]Coord{coord}, snake.body.data...)
+	snake.body.PushFront(coord)
 	snake.occupied[coord] = true
 }
 
 func (snake *Snake) boarderCollided() bool {
-	head := snake.head()
 
+	head := snake.head()
 	return head.x >= BoardSize || head.y >= BoardSize || head.x < 0 || head.y < 0
 
 }
 
 func (snake *Snake) selfCollided() bool {
-	// if head shared a coord with the body, the snake collided
-	return len(snake.body.data) != len(snake.occupied)
+	return len(snake.occupied) != snake.body.count
 
 }

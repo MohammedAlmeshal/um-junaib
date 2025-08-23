@@ -12,7 +12,11 @@ type Game struct {
 
 func NewGame() *Game {
 	coord := Coord{0, 1}
-	snake := &Snake{occupied: make(map[Coord]bool), direction: RIGHT}
+	snake := &Snake{
+		body:      NewQueue[Coord](BoardSize*BoardSize),
+		occupied:  make(map[Coord]bool),
+		direction: RIGHT}
+
 	snake.body.Enqueue(coord)
 	snake.occupied[coord] = true
 
