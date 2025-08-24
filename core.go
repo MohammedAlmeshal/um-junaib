@@ -51,14 +51,14 @@ type Queue[T any] struct {
 	size, count int
 }
 
-func NewQueue[T any](size int) *Queue[T] {
+func newQueue[T any](size int) *Queue[T] {
 	return &Queue[T]{
 		data: make([]T, size),
 		size: size,
 	}
 }
 
-func (q *Queue[T]) Enqueue(val T) error {
+func (q *Queue[T]) enqueue(val T) error {
 	if q.count == q.size {
 		return errors.New("queue is full")
 	}
@@ -68,7 +68,7 @@ func (q *Queue[T]) Enqueue(val T) error {
 	return nil
 }
 
-func (q *Queue[T]) Dequeue() (T, error) {
+func (q *Queue[T]) dequeue() (T, error) {
 	var zero T
 	if q.count == 0 {
 		return zero, errors.New("queue is empty")
@@ -79,7 +79,7 @@ func (q *Queue[T]) Dequeue() (T, error) {
 	return val, nil
 }
 
-func (q *Queue[T]) PushFront(val T) error {
+func (q *Queue[T]) pushFront(val T) error {
 	if q.count == q.size {
 		return errors.New("queue is full")
 	}

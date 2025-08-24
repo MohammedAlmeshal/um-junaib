@@ -21,10 +21,10 @@ func (snake *Snake) move() {
 		new_coord = Coord{head.x, head.y - 1}
 	}
 
-	coord, _ := snake.body.Dequeue()
+	coord, _ := snake.body.dequeue()
 	delete(snake.occupied, coord)
 
-	snake.body.Enqueue(new_coord)
+	snake.body.enqueue(new_coord)
 	snake.occupied[new_coord] = true
 
 }
@@ -36,7 +36,7 @@ func (snake *Snake) head() Coord {
 	return snake.body.data[(snake.body.tail-1+snake.body.size)%snake.body.size]
 }
 func (snake *Snake) grow(coord Coord) {
-	snake.body.PushFront(coord)
+	snake.body.pushFront(coord)
 	snake.occupied[coord] = true
 }
 

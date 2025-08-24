@@ -24,7 +24,7 @@ func waitForInput(inputChan <-chan []byte) (byte, bool) {
 	}
 }
 
-func ShowStartMenu(inputChan <-chan []byte) MenuResult {
+func startMenuLoop(inputChan <-chan []byte) MenuResult {
 	showStartMenu()
 	for {
 		input, ok := waitForInput(inputChan)
@@ -43,7 +43,7 @@ func ShowStartMenu(inputChan <-chan []byte) MenuResult {
 	}
 }
 
-func ShowGameOverMenu(inputChan <-chan []byte) MenuResult {
+func gameOverMenuLoop(inputChan <-chan []byte) MenuResult {
 	showGameOver()
 	for {
 		input, ok := waitForInput(inputChan)
@@ -62,7 +62,7 @@ func ShowGameOverMenu(inputChan <-chan []byte) MenuResult {
 	}
 }
 
-func ShowWinMenu(inputChan <-chan []byte) MenuResult {
+func winMenuLoop(inputChan <-chan []byte) MenuResult {
 	showWinScreen()
 	for {
 		input, ok := waitForInput(inputChan)

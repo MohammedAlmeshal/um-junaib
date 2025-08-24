@@ -9,25 +9,25 @@ func main() {
 	inputChan := startInputReader()
 
 	// Show start menu
-	if result := ShowStartMenu(inputChan); result == MenuQuit {
+	if result := startMenuLoop(inputChan); result == MenuQuit {
 		restoreTerminal()
 		os.Exit(0)
 	}
 
 	// Main game loop
 	for {
-		game := NewGame()
-		status := Run(game, inputChan)
+		game := newGame()
+		status := game.run(inputChan)
 
 		switch status {
 		case GameDead:
-			result := ShowGameOverMenu(inputChan)
+			result := gameOverMenuLoop(inputChan)
 			if result == MenuQuit {
 				restoreTerminal()
 				os.Exit(0)
 			}
 		case GameWon:
-			result := ShowWinMenu(inputChan)
+			result := winMenuLoop(inputChan)
 			if result == MenuQuit {
 				restoreTerminal()
 				os.Exit(0)

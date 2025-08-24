@@ -10,14 +10,14 @@ type Game struct {
 	food  *Food
 }
 
-func NewGame() *Game {
+func newGame() *Game {
 	coord := Coord{0, 1}
 	snake := &Snake{
-		body:      NewQueue[Coord](BoardSize * BoardSize),
+		body:      newQueue[Coord](BoardSize * BoardSize),
 		occupied:  make(map[Coord]bool),
 		direction: RIGHT}
 
-	snake.body.Enqueue(coord)
+	snake.body.enqueue(coord)
 	snake.occupied[coord] = true
 
 	food := &Food{}
@@ -38,6 +38,10 @@ func (game *Game) isValidTurn(nextDir Direction) bool {
 
 func (game *Game) isWon() bool {
 	return len(game.snake.occupied) == BoardSize*BoardSize
+}
+
+func (game *Game) getScore() int {
+	return len(game.snake.occupied)
 }
 
 func (game *Game) tick(dir Direction) GameStatus {
@@ -71,11 +75,7 @@ func (game *Game) tick(dir Direction) GameStatus {
 	return GameRunning
 }
 
-func (game *Game) getScore() int {
-	return len(game.snake.occupied)
-}
-
-func Run(game *Game, inputChan <-chan []byte) GameStatus {
+func (game *Game) run(inputChan <-chan []byte) GameStatus {
 	pendingDir := RIGHT
 	speed := 100 * time.Millisecond
 
