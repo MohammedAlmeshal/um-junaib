@@ -10,6 +10,15 @@ const BoardSize = 15
 type GameStatus int
 type Coord struct{ x, y int }
 
+type Direction int
+
+const (
+	UP Direction = iota
+	DOWN
+	LEFT
+	RIGHT
+)
+
 const (
 	GameRunning GameStatus = iota
 	GameDead
@@ -19,6 +28,22 @@ const (
 
 //go:embed art.txt
 var snakeArt string
+
+const (
+	// Display glyphs
+	snakeBodyGlyph = "\033[38;2;139;153;601m ◇ \033[0m"
+	snakeHeadGlyph = "\033[38;2;139;153;601m o \033[0m"
+	foodGlyph      = " 🍓"
+	gridGlyph      = "\033[2;90m ◦ \033[0m"
+
+	// Border characters
+	horizontalBorder  = "───"
+	verticalBorder    = "│"
+	topLeftCorner     = " ┌"
+	topRightCorner    = "┐"
+	bottomLeftCorner  = " └"
+	bottomRightCorner = "┘"
+)
 
 type Queue[T any] struct {
 	data        []T

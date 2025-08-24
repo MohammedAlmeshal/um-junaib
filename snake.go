@@ -1,14 +1,5 @@
 package main
 
-type Direction int
-
-const (
-	UP Direction = iota
-	DOWN
-	LEFT
-	RIGHT
-)
-
 type Snake struct {
 	body      *Queue[Coord]
 	occupied  map[Coord]bool

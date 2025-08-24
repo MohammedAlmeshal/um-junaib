@@ -8,22 +8,6 @@ import (
 	"golang.org/x/term"
 )
 
-const (
-	// Display glyphs
-	snakeBodyGlyph = "\033[38;2;139;153;601m ◇ \033[0m"
-	snakeHeadGlyph = "\033[38;2;139;153;601m o \033[0m"
-	foodGlyph      = " 🍓"
-	gridGlyph      = "\033[2;90m ◦ \033[0m"
-
-	// Border characters
-	horizontalBorder  = "───"
-	verticalBorder    = "│"
-	topLeftCorner     = " ┌"
-	topRightCorner    = "┐"
-	bottomLeftCorner  = " └"
-	bottomRightCorner = "┘"
-)
-
 // Terminal utilities
 func getTerminalSize() (width, height int) {
 	width, height, err := term.GetSize(int(os.Stdout.Fd()))

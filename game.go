@@ -13,7 +13,7 @@ type Game struct {
 func NewGame() *Game {
 	coord := Coord{0, 1}
 	snake := &Snake{
-		body:      NewQueue[Coord](BoardSize*BoardSize),
+		body:      NewQueue[Coord](BoardSize * BoardSize),
 		occupied:  make(map[Coord]bool),
 		direction: RIGHT}
 
@@ -27,6 +27,17 @@ func NewGame() *Game {
 		snake: snake,
 		food:  food,
 	}
+}
+
+func (game *Game) isValidTurn(nextDir Direction) bool {
+	currentDir := game.snake.direction
+	isOpposite := (currentDir ^ nextDir) == 1
+	isSame := currentDir == nextDir
+	return !(isOpposite || isSame)
+}
+
+func (game *Game) isWon() bool {
+	return len(game.snake.occupied) == BoardSize*BoardSize
 }
 
 func (game *Game) tick(dir Direction) GameStatus {
@@ -46,8 +57,7 @@ func (game *Game) tick(dir Direction) GameStatus {
 	if ateFood {
 		snake.grow(tail)
 
-		// Check if player won (snake fills entire board)
-		if len(snake.occupied) == BoardSize*BoardSize {
+		if game.isWon() {
 			return GameWon
 		}
 
@@ -85,15 +95,9 @@ func Run(game *Game, inputChan <-chan []byte) GameStatus {
 			if !ok {
 				return GameTerminated
 			}
-			if dir, ok := inputHandler(data); ok && validTurn(game.snake.direction, dir) {
-				pendingDir = dir
+			if nextDir, ok := inputHandler(data); ok && game.isValidTurn(nextDir) {
+				pendingDir = nextDir
 			}
 		}
 	}
-}
-
-func validTurn(current, next Direction) bool {
-	isOpposite := (current ^ next) == 1
-	isSame := current == next
-	return !(isOpposite || isSame)
 }
