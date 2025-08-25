@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/rand"
 	"time"
 )
 
@@ -54,7 +55,14 @@ func (game *Game) tick(dir Direction) GameStatus {
 
 	snake.move()
 
-	if snake.boarderCollided() || snake.selfCollided() {
+	// random shift
+	if snake.body.count > 1 {
+		if rand.Intn(100) < 3 {
+			snake.shift(food.coord)
+		}
+	}
+
+	if snake.borderCollided() || snake.selfCollided() {
 		return GameDead
 	}
 
@@ -77,7 +85,7 @@ func (game *Game) tick(dir Direction) GameStatus {
 
 func (game *Game) run(inputChan <-chan []byte) GameStatus {
 	pendingDir := RIGHT
-	speed := 100 * time.Millisecond
+	speed := 150 * time.Millisecond
 
 	ticker := time.NewTicker(speed)
 	defer ticker.Stop()
