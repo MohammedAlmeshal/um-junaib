@@ -1,4 +1,4 @@
-package main
+package game
 
 import (
 	"math/rand"
@@ -6,59 +6,59 @@ import (
 )
 
 type Game struct {
-	board [BoardSize][BoardSize]int
-	snake *Snake
-	food  *Food
+	Board [BoardSize][BoardSize]int
+	Snake *Snake
+	Food  *Food
 }
 
-func newGame() *Game {
+func NewGame() *Game {
 	coord := Coord{0, 1}
 	snake := &Snake{
-		body:      newQueue[Coord](BoardSize * BoardSize),
-		occupied:  make(map[Coord]bool),
+		body:      NewQueue[Coord](BoardSize * BoardSize),
+		Occupied:  make(map[Coord]bool),
 		direction: RIGHT}
 
-	snake.body.enqueue(coord)
-	snake.occupied[coord] = true
+	snake.body.Enqueue(coord)
+	snake.Occupied[coord] = true
 
 	food := &Food{}
-	food.spawn()
+	food.Spawn()
 
 	return &Game{
-		snake: snake,
-		food:  food,
+		Snake: snake,
+		Food:  food,
 	}
 }
 
-func (game *Game) isValidTurn(nextDir Direction) bool {
-	currentDir := game.snake.direction
+func (game *Game) IsValidTurn(nextDir Direction) bool {
+	currentDir := game.Snake.direction
 	isOpposite := (currentDir ^ nextDir) == 1
 	isSame := currentDir == nextDir
 	return !(isOpposite || isSame)
 }
 
 func (game *Game) isWon() bool {
-	return len(game.snake.occupied) == BoardSize*BoardSize
+	return len(game.Snake.Occupied) == BoardSize*BoardSize
 }
 
-func (game *Game) getScore() int {
-	return len(game.snake.occupied)
+func (game *Game) GetScore() int {
+	return len(game.Snake.Occupied)
 }
 
 func (game *Game) tick(dir Direction) GameStatus {
-	snake := game.snake
-	food := game.food
+	snake := game.Snake
+	food := game.Food
 
 	snake.direction = dir
-	ateFood := snake.head() == food.coord
+	ateFood := snake.head() == food.Coord
 	tail := snake.tail()
 
 	snake.move()
 
 	// random shift
-	if snake.body.count > 1 {
+	if snake.body.Count > 1 {
 		if rand.Intn(100) < 3 {
-			snake.shift(food.coord)
+			snake.shift(food.Coord)
 		}
 	}
 
@@ -74,8 +74,8 @@ func (game *Game) tick(dir Direction) GameStatus {
 		}
 
 		for {
-			food.spawn()
-			if !snake.occupied[food.coord] {
+			food.Spawn()
+			if !snake.Occupied[food.Coord] {
 				break
 			}
 		}
@@ -83,7 +83,7 @@ func (game *Game) tick(dir Direction) GameStatus {
 	return GameRunning
 }
 
-func (game *Game) run(inputChan <-chan []byte) GameStatus {
+func (game *Game) Run(inputChan <-chan []byte, renderFunc func(*Game), inputHandler func([]byte) (Direction, bool)) GameStatus {
 	pendingDir := RIGHT
 	speed := 150 * time.Millisecond
 
@@ -97,13 +97,13 @@ func (game *Game) run(inputChan <-chan []byte) GameStatus {
 			if status != GameRunning {
 				return status
 			}
-			renderBoard(game)
+			renderFunc(game)
 
 		case data, ok := <-inputChan:
 			if !ok {
 				return GameTerminated
 			}
-			if nextDir, ok := inputHandler(data); ok && game.isValidTurn(nextDir) {
+			if nextDir, ok := inputHandler(data); ok && game.IsValidTurn(nextDir) {
 				pendingDir = nextDir
 			}
 		}

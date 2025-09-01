@@ -2,37 +2,39 @@ package main
 
 import (
 	"os"
+	"snake/game"
+	"snake/terminal"
 )
 
 func main() {
-	defer restoreTerminal()
-	inputChan := startInputReader()
+	defer terminal.RestoreTerminal()
+	inputChan := terminal.StartInputReader()
 
 	// Show start menu
-	if result := startMenuLoop(inputChan); result == MenuQuit {
-		restoreTerminal()
+	if result := terminal.StartMenuLoop(inputChan); result == terminal.MenuQuit {
+		terminal.RestoreTerminal()
 		os.Exit(0)
 	}
 
 	// Main game loop
 	for {
-		game := newGame()
-		status := game.run(inputChan)
+		g := game.NewGame()
+		status := g.Run(inputChan, terminal.RenderBoard, terminal.InputHandler)
 
 		switch status {
-		case GameDead:
-			result := gameOverMenuLoop(inputChan)
-			if result == MenuQuit {
-				restoreTerminal()
+		case game.GameDead:
+			result := terminal.GameOverMenuLoop(inputChan)
+			if result == terminal.MenuQuit {
+				terminal.RestoreTerminal()
 				os.Exit(0)
 			}
-		case GameWon:
-			result := winMenuLoop(inputChan)
-			if result == MenuQuit {
-				restoreTerminal()
+		case game.GameWon:
+			result := terminal.WinMenuLoop(inputChan)
+			if result == terminal.MenuQuit {
+				terminal.RestoreTerminal()
 				os.Exit(0)
 			}
-		case GameTerminated:
+		case game.GameTerminated:
 			return
 		}
 	}

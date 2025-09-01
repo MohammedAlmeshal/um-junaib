@@ -1,11 +1,29 @@
-package main
+package terminal
 
 import (
 	_ "embed"
 	"fmt"
 	"os"
 
+	"snake/game"
+
 	"golang.org/x/term"
+)
+
+const (
+	// Display glyphs
+	SnakeBodyGlyph = "\033[38;2;238;177;121m ❂ \033[0m"
+	SnakeHeadGlyph = "\033[38;2;220;64;72m ✥ \033[0m"
+	FoodGlyph      = " 🍇"
+	GridGlyph      = "\033[2;90m ◦ \033[0m"
+
+	// Border characters
+	HorizontalBorder  = "───"
+	VerticalBorder    = "│"
+	TopLeftCorner     = " ┌"
+	TopRightCorner    = "┐"
+	BottomLeftCorner  = " └"
+	BottomRightCorner = "┘"
 )
 
 // Terminal utilities
@@ -49,51 +67,51 @@ func hideCursor() {
 // Board rendering functions
 func renderTopBorder(cols int) {
 	indent := calculateBoardIndent(cols)
-	fmt.Print(indent + topLeftCorner)
+	fmt.Print(indent + TopLeftCorner)
 	for i := 0; i < cols; i++ {
-		fmt.Print(horizontalBorder)
+		fmt.Print(HorizontalBorder)
 	}
-	fmt.Println(topRightCorner + "\r ")
+	fmt.Println(TopRightCorner + "\r ")
 }
 
 func renderBottomBorder(cols int) {
 	indent := calculateBoardIndent(cols)
-	fmt.Print("\r\n" + indent + bottomLeftCorner)
+	fmt.Print("\r\n" + indent + BottomLeftCorner)
 	for i := 0; i < cols; i++ {
-		fmt.Print(horizontalBorder)
+		fmt.Print(HorizontalBorder)
 	}
-	fmt.Println(bottomRightCorner)
+	fmt.Println(BottomRightCorner)
 }
 
-func getCellGlyph(coord Coord, snake *Snake, food *Food) string {
+func getCellGlyph(coord game.Coord, snake *game.Snake, food *game.Food) string {
 	// Check if snake occupies this position
-	if _, occupied := snake.occupied[coord]; occupied {
-		if coord == snake.head() {
-			return snakeHeadGlyph
+	if _, occupied := snake.Occupied[coord]; occupied {
+		if coord == snake.Head() {
+			return SnakeHeadGlyph
 		}
-		return snakeBodyGlyph
+		return SnakeBodyGlyph
 	}
 
 	// Check if food is at this position
-	if food.coord.x == coord.x && food.coord.y == coord.y {
-		return foodGlyph
+	if food.Coord.X == coord.X && food.Coord.Y == coord.Y {
+		return FoodGlyph
 	}
 
 	// Empty cell
-	return gridGlyph
+	return GridGlyph
 }
 
-func renderBoard(game *Game) {
-	board := game.board
-	snake := game.snake
-	food := game.food
+func RenderBoard(g *game.Game) {
+	board := g.Board
+	snake := g.Snake
+	food := g.Food
 	cols := len(board[0])
 	indent := calculateBoardIndent(cols)
 
 	clearScreen()
 	hideCursor()
 
-	fmt.Printf(indent+"Score: %d \r\n", game.getScore())
+	fmt.Printf(indent+"Score: %d \r\n", g.GetScore())
 
 	// Render top border
 	renderTopBorder(cols)
@@ -104,35 +122,35 @@ func renderBoard(game *Game) {
 			fmt.Print("\r\n ")
 		}
 
-		fmt.Print(indent + verticalBorder) // Left border
+		fmt.Print(indent + VerticalBorder) // Left border
 
 		// Render each cell in the row
 		for col := range board[row] {
-			coord := Coord{row, col}
+			coord := game.Coord{row, col}
 			glyph := getCellGlyph(coord, snake, food)
 			fmt.Print(glyph)
 		}
 
-		fmt.Print(verticalBorder) // Right border
+		fmt.Print(VerticalBorder) // Right border
 	}
 
 	// Render bottom border
 	renderBottomBorder(cols)
 }
 
-func showStartMenu() {
+func ShowStartMenu() {
 	clearScreen()
 	fmt.Print("\r\nSTART 🐍\r\n")
 	fmt.Print("Press 's' to start or 'q' to quit: ")
 }
 
-func showGameOver() {
+func ShowGameOver() {
 	clearScreen()
 	fmt.Print("\r\nGAME OVER!\r\n")
 	fmt.Print("Press 'r' to restart or 'q' to quit: ")
 }
 
-func showWinScreen() {
+func ShowWinScreen() {
 	clearScreen()
 	fmt.Print("\r\nYOU WON! 🎉\r\n")
 	fmt.Print("Press 'r' to restart or 'q' to quit: ")

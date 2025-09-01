@@ -1,4 +1,4 @@
-package main
+package terminal
 
 import (
 	"os"
@@ -24,12 +24,12 @@ func waitForInput(inputChan <-chan []byte) (byte, bool) {
 	}
 }
 
-func startMenuLoop(inputChan <-chan []byte) MenuResult {
-	showStartMenu()
+func StartMenuLoop(inputChan <-chan []byte) MenuResult {
+	ShowStartMenu()
 	for {
 		input, ok := waitForInput(inputChan)
 		if !ok {
-			restoreTerminal()
+			RestoreTerminal()
 			os.Exit(0)
 		}
 		switch input {
@@ -38,17 +38,17 @@ func startMenuLoop(inputChan <-chan []byte) MenuResult {
 		case 'q', 'Q':
 			return MenuQuit
 		default:
-			showStartMenu()
+			ShowStartMenu()
 		}
 	}
 }
 
-func gameOverMenuLoop(inputChan <-chan []byte) MenuResult {
-	showGameOver()
+func GameOverMenuLoop(inputChan <-chan []byte) MenuResult {
+	ShowGameOver()
 	for {
 		input, ok := waitForInput(inputChan)
 		if !ok {
-			restoreTerminal()
+			RestoreTerminal()
 			os.Exit(0)
 		}
 		switch input {
@@ -57,17 +57,17 @@ func gameOverMenuLoop(inputChan <-chan []byte) MenuResult {
 		case 'q', 'Q':
 			return MenuQuit
 		default:
-			showGameOver()
+			ShowGameOver()
 		}
 	}
 }
 
-func winMenuLoop(inputChan <-chan []byte) MenuResult {
-	showWinScreen()
+func WinMenuLoop(inputChan <-chan []byte) MenuResult {
+	ShowWinScreen()
 	for {
 		input, ok := waitForInput(inputChan)
 		if !ok {
-			restoreTerminal()
+			RestoreTerminal()
 			os.Exit(0)
 		}
 		switch input {
@@ -76,7 +76,7 @@ func winMenuLoop(inputChan <-chan []byte) MenuResult {
 		case 'q', 'Q':
 			return MenuQuit
 		default:
-			showWinScreen()
+			ShowWinScreen()
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package main
+package terminal
 
 import (
 	"os"
@@ -6,11 +6,12 @@ import (
 	"syscall"
 
 	"golang.org/x/term"
+	"snake/game"
 )
 
 var terminalState *term.State
 
-func setupTerminal() {
+func SetupTerminal() {
 	fd := int(os.Stdin.Fd())
 	oldState, err := term.MakeRaw(fd)
 	if err != nil {
@@ -23,12 +24,12 @@ func setupTerminal() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
-		restoreTerminal()
+		RestoreTerminal()
 		os.Exit(0)
 	}()
 }
 
-func restoreTerminal() {
+func RestoreTerminal() {
 	if terminalState != nil {
 		fd := int(os.Stdin.Fd())
 		term.Restore(fd, terminalState)
@@ -60,24 +61,24 @@ func inputReader(inputChan chan<- []byte) {
 	}
 }
 
-func startInputReader() <-chan []byte {
-	setupTerminal()
+func StartInputReader() <-chan []byte {
+	SetupTerminal()
 	ch := make(chan []byte, 5)
 	go inputReader(ch)
 	return ch
 }
 
-func inputHandler(data []byte) (Direction, bool) {
+func InputHandler(data []byte) (game.Direction, bool) {
 	if len(data) >= 3 && data[0] == 27 && data[1] == 91 {
 		switch data[2] {
 		case 65: // A
-			return UP, true
+			return game.UP, true
 		case 66: // B
-			return DOWN, true
+			return game.DOWN, true
 		case 67: // C
-			return RIGHT, true
+			return game.RIGHT, true
 		case 68: // D
-			return LEFT, true
+			return game.LEFT, true
 		default:
 			return 0, false
 		}
