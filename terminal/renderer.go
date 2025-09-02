@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+	"strings"
 
 	"snake/game"
 
@@ -13,8 +14,8 @@ import (
 const (
 	// Display glyphs
 	SnakeBodyGlyph = "\033[38;2;238;177;121m ❂ \033[0m"
-	SnakeHeadGlyph = "\033[38;2;220;64;72m ✥ \033[0m"
-	FoodGlyph      = " 🍇"
+	SnakeHeadGlyph = "\033[38;2;220;64;72m ❖ \033[0m"
+	FoodGlyph      = " 🍒"
 	GridGlyph      = "\033[2;90m ◦ \033[0m"
 
 	// Border characters
@@ -25,6 +26,9 @@ const (
 	BottomLeftCorner  = " └"
 	BottomRightCorner = "┘"
 )
+
+//go:embed art.txt
+var SnakeArt string
 
 // Terminal utilities
 func getTerminalSize() (width, height int) {
@@ -111,7 +115,7 @@ func RenderBoard(g *game.Game) {
 	clearScreen()
 	hideCursor()
 
-	fmt.Printf(indent+"Score: %d \r\n", g.GetScore())
+	fmt.Printf(indent+" Score: %d \r\n", g.GetScore())
 
 	// Render top border
 	renderTopBorder(cols)
@@ -140,18 +144,41 @@ func RenderBoard(g *game.Game) {
 
 func ShowStartMenu() {
 	clearScreen()
-	fmt.Print("\r\nSTART 🐍\r\n")
-	fmt.Print("Press 's' to start or 'q' to quit: ")
+
+	// Center the art horizontally
+	artLines := strings.Split(SnakeArt, "\n")
+
+	for _, line := range artLines {
+		if line == "" {
+			fmt.Print("\r\n")
+			continue
+		}
+
+		fmt.Printf("	%s\r\n", line)
+	}
+
+	fmt.Print("\r\n\r\n")
+	fmt.Print("        > Press any key to start 🟢\r\n")
+	fmt.Print("        > Press 'q' or ESC to quit ❌\r\n")
 }
 
-func ShowGameOver() {
+func ShowGameOver(score int) {
 	clearScreen()
-	fmt.Print("\r\nGAME OVER!\r\n")
-	fmt.Print("Press 'r' to restart or 'q' to quit: ")
+	fmt.Print("\r\n\r\n        ══════════════════════════════\r\n")
+	fmt.Print("        	💀 GAME OVER! 💀\r\n")
+	fmt.Print("        ══════════════════════════════\r\n")
+	fmt.Printf("        • Score: %d\r\n", score)
+	fmt.Print("        - - - - - - - - - - - - - - - \r\n\r\n")
+
+	fmt.Print("        > Press any key to restart 🔄\r\n")
+	fmt.Print("        > Press 'q' or ESC to quit ❌\r\n")
 }
 
 func ShowWinScreen() {
 	clearScreen()
-	fmt.Print("\r\nYOU WON! 🎉\r\n")
-	fmt.Print("Press 'r' to restart or 'q' to quit: ")
+	fmt.Print("\r\n\r\n        ══════════════════════════════\r\n")
+	fmt.Print("           🎉 VICTORY! 🎉\r\n")
+	fmt.Print("        ══════════════════════════════\r\n\r\n")
+	fmt.Print("        > Press any key to restart\r\n")
+	fmt.Print("        > Press 'q' or ESC to quit\r\n")
 }

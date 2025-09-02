@@ -23,7 +23,7 @@ func main() {
 
 		switch status {
 		case game.GameDead:
-			result := terminal.GameOverMenuLoop(inputChan)
+			result := terminal.GameOverMenuLoop(inputChan, g.GetScore())
 			if result == terminal.MenuQuit {
 				terminal.RestoreTerminal()
 				os.Exit(0)

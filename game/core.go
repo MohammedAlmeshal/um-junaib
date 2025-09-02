@@ -26,9 +26,6 @@ const (
 	GameTerminated
 )
 
-//go:embed art.txt
-var SnakeArt string
-
 type Queue[T any] struct {
 	Data        []T
 	Head, Tail  int

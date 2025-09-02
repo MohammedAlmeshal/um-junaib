@@ -12,14 +12,14 @@ const (
 	MenuQuit
 )
 
-func waitForInput(inputChan <-chan []byte) (byte, bool) {
+func waitForInput(inputChan <-chan []byte) ([]byte, bool) {
 	for {
 		data, ok := <-inputChan
 		if !ok {
-			return 0, false
+			return nil, false
 		}
 		if len(data) > 0 {
-			return data[0], true
+			return data, true
 		}
 	}
 }
@@ -27,56 +27,71 @@ func waitForInput(inputChan <-chan []byte) (byte, bool) {
 func StartMenuLoop(inputChan <-chan []byte) MenuResult {
 	ShowStartMenu()
 	for {
-		input, ok := waitForInput(inputChan)
+		data, ok := waitForInput(inputChan)
 		if !ok {
 			RestoreTerminal()
 			os.Exit(0)
 		}
-		switch input {
-		case 's', 'S':
-			return MenuStart
-		case 'q', 'Q':
+		
+		// Check for ESC key
+		if len(data) == 1 && data[0] == 27 {
 			return MenuQuit
-		default:
-			ShowStartMenu()
 		}
+		
+		// Check for 'q' or 'Q'
+		if len(data) > 0 && (data[0] == 'q' || data[0] == 'Q') {
+			return MenuQuit
+		}
+		
+		// Any other key starts the game
+		return MenuStart
 	}
 }
 
-func GameOverMenuLoop(inputChan <-chan []byte) MenuResult {
-	ShowGameOver()
+func GameOverMenuLoop(inputChan <-chan []byte, score int) MenuResult {
+	ShowGameOver(score)
 	for {
-		input, ok := waitForInput(inputChan)
+		data, ok := waitForInput(inputChan)
 		if !ok {
 			RestoreTerminal()
 			os.Exit(0)
 		}
-		switch input {
-		case 'r', 'R':
-			return MenuRestart
-		case 'q', 'Q':
+		
+		// Check for ESC key
+		if len(data) == 1 && data[0] == 27 {
 			return MenuQuit
-		default:
-			ShowGameOver()
 		}
+		
+		// Check for 'q' or 'Q'
+		if len(data) > 0 && (data[0] == 'q' || data[0] == 'Q') {
+			return MenuQuit
+		}
+		
+		// Any other key restarts the game
+		return MenuRestart
 	}
 }
 
 func WinMenuLoop(inputChan <-chan []byte) MenuResult {
 	ShowWinScreen()
 	for {
-		input, ok := waitForInput(inputChan)
+		data, ok := waitForInput(inputChan)
 		if !ok {
 			RestoreTerminal()
 			os.Exit(0)
 		}
-		switch input {
-		case 'r', 'R':
-			return MenuRestart
-		case 'q', 'Q':
+		
+		// Check for ESC key
+		if len(data) == 1 && data[0] == 27 {
 			return MenuQuit
-		default:
-			ShowWinScreen()
 		}
+		
+		// Check for 'q' or 'Q'
+		if len(data) > 0 && (data[0] == 'q' || data[0] == 'Q') {
+			return MenuQuit
+		}
+		
+		// Any other key restarts the game
+		return MenuRestart
 	}
 }

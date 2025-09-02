@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const gameSpeed = 150
+
 type Game struct {
 	Board [BoardSize][BoardSize]int
 	Snake *Snake
@@ -85,7 +87,7 @@ func (game *Game) tick(dir Direction) GameStatus {
 
 func (game *Game) Run(inputChan <-chan []byte, renderFunc func(*Game), inputHandler func([]byte) (Direction, bool)) GameStatus {
 	pendingDir := RIGHT
-	speed := 150 * time.Millisecond
+	speed := gameSpeed * time.Millisecond
 
 	ticker := time.NewTicker(speed)
 	defer ticker.Stop()
