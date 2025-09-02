@@ -1,27 +1,40 @@
 # Um-Junaib
 
+<img width="500" height="350" alt="um-junaib" src="https://github.com/user-attachments/assets/b752cd0a-a74b-4080-a074-377dcd0aadc6" />
 
-A CLI-based Snake game written in Go.
+A terminal-based Snake game built with Go (with a twist).
 
-## Description
-
-A CLI-based Snake game built with Go. ⚠️ Warning: this snake has a tendency to sidewind!
-
-## Build & Run
+⚠️ **Warning**: This snake has a tendency to sidewind!
 
 
-### Build
+## Installation & Usage
+
+### Quick Start
 ```bash
-go build -o um-junaib
-```
-
-### Run
-```bash
+# Clone and run immediately
+git clone https://github.com/MohammedAlmeshal/um-junaib.git
+cd um-junaib
 go run .
 ```
 
+### Build for Distribution
+```bash
+# Build executable
+go build -o um-junaib
+
+# Run the built binary
+./um-junaib
+```
 
 ## Controls
-- Arrow keys: Move snake
-- Any key: Start/Restart game
-- Q or ESC: Quit
+
+| Key | Action |
+|-----|--------|
+| ↑↓←→ | Move snake (with sidewinding physics!) |
+| Any key | Start new game / Restart after game over |
+| Q or ESC | Quit game |
+
+
+## About the Name
+
+"Um-Junaib" (أم جنيب) is the Arabic name for the horned viper, a desert snake known for its distinctive sidewinding motion across sand dunes. This game captures that unique movement pattern in digital form.
