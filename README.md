@@ -1,6 +1,7 @@
 # Um-Junaib
 
-<img width="500" height="350" alt="um-junaib" src="https://github.com/user-attachments/assets/b752cd0a-a74b-4080-a074-377dcd0aadc6" />
+<img width="500" height="350" alt="um-junaib" src="https://github.com/user-attachments/assets/41fa02c5-d5e8-448e-9107-e3f5119dcd30" />
+
 
 A terminal-based Snake game built with Go (with a twist).
 
